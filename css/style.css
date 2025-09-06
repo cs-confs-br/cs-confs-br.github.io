@@ -116,6 +116,13 @@ body {
     letter-spacing: -0.02em;
 }
 
+.hero-logo {
+    max-width: 300px;
+    width: 90%;
+    height: auto;
+    margin-bottom: 0.75rem;
+}
+
 .hero p {
     font-size: 1.15rem;
     font-weight: 400;
@@ -536,6 +543,11 @@ footer {
     
     .hero p {
         font-size: 0.9rem;
+    }
+    
+    .hero-logo {
+        max-width: 200px;
+        width: 85%;
     }
     
     .content {
