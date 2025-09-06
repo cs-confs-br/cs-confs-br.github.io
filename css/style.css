@@ -112,6 +112,8 @@ body {
 .hero h2 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
 }
 
 .hero p {
