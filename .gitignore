@@ -1,0 +1,42 @@
+# Pastas relacionadas a LLM
+.claude/
+.claudecode/
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
+*.bak
+*~
+
+# Logs
+*.log
+logs/
+
+# Dependências
+node_modules/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.env
+
+# Dados temporários
+temp/
+tmp/
+cache/
