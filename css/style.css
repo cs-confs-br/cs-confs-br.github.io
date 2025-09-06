@@ -105,7 +105,7 @@ body {
 .hero {
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     color: var(--white);
-    padding: 4rem 0;
+    padding: 2rem 0;
     text-align: center;
 }
 
@@ -114,18 +114,30 @@ body {
     margin-bottom: 1rem;
 }
 
+.hero-logo {
+    max-width: 300px;
+    width: 90%;
+    height: auto;
+    margin-bottom: 0.75rem;
+}
+
 .hero p {
-    font-size: 1.2rem;
-    opacity: 0.95;
+    font-size: 1.15rem;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    opacity: 0.98;
+    margin-bottom: 0;
+    padding-bottom: 1rem;
+    line-height: 1.6;
 }
 
 .content {
-    padding: 3rem 0;
+    padding: 2.1rem 0;
     background-color: var(--white);
 }
 
 .tabs {
-    margin-top: 2rem;
+    margin-top: 0;
 }
 
 .tab-buttons {
@@ -529,6 +541,11 @@ footer {
     
     .hero p {
         font-size: 0.9rem;
+    }
+    
+    .hero-logo {
+        max-width: 200px;
+        width: 85%;
     }
     
     .content {
