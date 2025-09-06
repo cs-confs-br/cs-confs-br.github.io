@@ -295,7 +295,7 @@ function renderTable() {
             <td>${item.totalCitations.toLocaleString('pt-BR')}</td>
             <td>${item.paperCount}</td>
             <td>${item.category}</td>
-            <td><button class="btn-detail" onclick="showDetails('${encodeURIComponent(JSON.stringify(item))}')">Ver</button></td>
+            <td><button class="btn-detail" onclick="showDetails('${encodeURIComponent(JSON.stringify(item))}')">View</button></td>
         `;
         tbody.appendChild(row);
     });
@@ -305,7 +305,7 @@ function renderTable() {
 
 function updatePagination() {
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;
+    document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
     
     document.getElementById('prev-page').disabled = currentPage === 1;
     document.getElementById('next-page').disabled = currentPage === totalPages;
@@ -319,7 +319,7 @@ function changePage(direction) {
 
 function showDetails(encodedItem) {
     const item = JSON.parse(decodeURIComponent(encodedItem));
-    alert(`Organização: ${item.organization}\nConferência: ${item.conference}\nSigla: ${item.acronym}\nAno: ${item.year}\nEditora: ${item.publisher}\nProceedings: ${item.proceedings}\nISBN/ISSN: ${item.isbnIssn}\nCategoria: ${item.category}\nSubcategoria: ${item.subcategory}\nH5-Index: ${item.h5index}\nTotal de Citações: ${item.totalCitations}\nTotal de Artigos: ${item.paperCount}`);
+    alert(`Organization: ${item.organization}\nConference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nPublisher: ${item.publisher}\nProceedings: ${item.proceedings}\nISBN/ISSN: ${item.isbnIssn}\nCategory: ${item.category}\nSubcategory: ${item.subcategory}\nH5-Index: ${item.h5index}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
 }
 
 function updateStatistics() {

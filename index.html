@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>H5-Index de Conferências Brasileiras em Ciência da Computação</title>
+    <title>H5-Index of Brazilian Computer Science Conferences</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -12,7 +12,7 @@
         <nav class="navbar">
             <div class="container">
                 <div class="nav-brand">
-                    <h1>H5-Index Conferências BR</h1>
+                    <h1>Computer Science Conferences BR</h1>
                 </div>
                 <button class="nav-toggle" id="nav-toggle">
                     <span></span>
@@ -20,10 +20,10 @@
                     <span></span>
                 </button>
                 <ul class="nav-menu" id="nav-menu">
-                    <li><a href="#home" class="nav-link active">Início</a></li>
-                    <li><a href="#conferences" class="nav-link">Conferências</a></li>
-                    <li><a href="#about" class="nav-link">Sobre</a></li>
-                    <li><a href="#methodology" class="nav-link">Metodologia</a></li>
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#conferences" class="nav-link">Conferences</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#methodology" class="nav-link">Methodology</a></li>
                 </ul>
             </div>
         </nav>
@@ -32,8 +32,8 @@
     <main>
         <section id="home" class="hero">
             <div class="container">
-                <h2>Índice H5 de Conferências Brasileiras</h2>
-                <p>Análise bibliométrica das principais conferências acadêmicas brasileiras em Ciência da Computação</p>
+                <h2>Metrics for Brazilian Computer Science Conferences</h2>
+                <p>Bibliometric analysis of the main Brazilian academic conferences in Computer Science</p>
             </div>
         </section>
 
@@ -41,20 +41,20 @@
             <div class="container">
                 <div class="tabs">
                     <div class="tab-buttons">
-                        <button class="tab-button active" data-tab="eventos">Eventos</button>
-                        <button class="tab-button" data-tab="estatisticas">Estatísticas</button>
+                        <button class="tab-button active" data-tab="eventos">Events</button>
+                        <button class="tab-button" data-tab="estatisticas">Statistics</button>
                     </div>
                     
                     <div id="eventos" class="tab-content active">
                         <div class="filters">
                             <div class="filter-group">
-                                <label for="search">Buscar:</label>
-                                <input type="text" id="search" placeholder="Digite o nome da conferência, sigla ou organização...">
+                                <label for="search">Search:</label>
+                                <input type="text" id="search" placeholder="Enter conference name, acronym or organization...">
                             </div>
                             <div class="filter-group">
-                                <label for="year-filter">Ano:</label>
+                                <label for="year-filter">Year:</label>
                                 <select id="year-filter">
-                                    <option value="">Todos</option>
+                                    <option value="">All</option>
                                     <option value="2025">2025</option>
                                     <option value="2024">2024</option>
                                     <option value="2023">2023</option>
@@ -64,12 +64,12 @@
                                 </select>
                             </div>
                             <div class="filter-group">
-                                <label for="field-filter">Categoria:</label>
+                                <label for="field-filter">Category:</label>
                                 <select id="field-filter">
-                                    <option value="">Todas</option>
+                                    <option value="">All</option>
                                 </select>
                             </div>
-                            <button id="clear-filters" class="btn-secondary">Limpar Filtros</button>
+                            <button id="clear-filters" class="btn-secondary">Clear Filters</button>
                         </div>
 
                         <div class="table-container">
@@ -77,48 +77,48 @@
                                 <table id="conferences-table">
                                     <thead>
                                         <tr>
-                                            <th data-sort="organization">Organização <i class="fas fa-sort"></i></th>
-                                            <th data-sort="conference">Conferência <i class="fas fa-sort"></i></th>
-                                            <th data-sort="acronym">Sigla <i class="fas fa-sort"></i></th>
-                                            <th data-sort="year">Ano <i class="fas fa-sort"></i></th>
+                                            <th data-sort="organization">Organization <i class="fas fa-sort"></i></th>
+                                            <th data-sort="conference">Conference <i class="fas fa-sort"></i></th>
+                                            <th data-sort="acronym">Acronym <i class="fas fa-sort"></i></th>
+                                            <th data-sort="year">Year <i class="fas fa-sort"></i></th>
                                             <th data-sort="h5index">H5-Index <i class="fas fa-sort"></i></th>
-                                            <th data-sort="citations">Citações <i class="fas fa-sort"></i></th>
-                                            <th data-sort="papers">Artigos <i class="fas fa-sort"></i></th>
-                                            <th data-sort="category">Categoria <i class="fas fa-sort"></i></th>
-                                            <th>Detalhes</th>
+                                            <th data-sort="citations">Citations <i class="fas fa-sort"></i></th>
+                                            <th data-sort="papers">Papers <i class="fas fa-sort"></i></th>
+                                            <th data-sort="category">Category <i class="fas fa-sort"></i></th>
+                                            <th>Details</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body">
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="loading" class="loading">Carregando dados...</div>
-                            <div id="no-results" class="no-results" style="display: none;">Nenhum resultado encontrado.</div>
+                            <div id="loading" class="loading">Loading data...</div>
+                            <div id="no-results" class="no-results" style="display: none;">No results found.</div>
                         </div>
 
                         <div class="pagination">
-                            <button id="prev-page" class="btn-pagination" disabled>Anterior</button>
-                            <span id="page-info">Página 1 de 1</span>
-                            <button id="next-page" class="btn-pagination">Próxima</button>
+                            <button id="prev-page" class="btn-pagination" disabled>Previous</button>
+                            <span id="page-info">Page 1 of 1</span>
+                            <button id="next-page" class="btn-pagination">Next</button>
                         </div>
                     </div>
 
                     <div id="estatisticas" class="tab-content">
                         <div class="stats-container">
                             <div class="stat-card">
-                                <h3>Total de Conferências</h3>
+                                <h3>Total Conferences</h3>
                                 <p class="stat-number" id="total-conferences">0</p>
                             </div>
                             <div class="stat-card">
-                                <h3>Total de Artigos</h3>
+                                <h3>Total Papers</h3>
                                 <p class="stat-number" id="total-papers">0</p>
                             </div>
                             <div class="stat-card">
-                                <h3>Total de Citações</h3>
+                                <h3>Total Citations</h3>
                                 <p class="stat-number" id="total-citations">0</p>
                             </div>
                             <div class="stat-card">
-                                <h3>H5-Index Médio</h3>
+                                <h3>Average H5-Index</h3>
                                 <p class="stat-number" id="avg-h5index">0</p>
                             </div>
                         </div>
@@ -132,30 +132,29 @@
 
         <section id="about" class="info-section">
             <div class="container">
-                <h2>Sobre o H5-Index</h2>
-                <p>O H5-Index é uma métrica bibliométrica que mede o impacto e a produtividade científica de conferências acadêmicas. Um H5-Index de valor h significa que h artigos publicados nos últimos 5 anos receberam pelo menos h citações cada.</p>
-                <p>Este índice é amplamente utilizado para avaliar a qualidade e relevância de conferências científicas, fornecendo uma medida objetiva do impacto das publicações.</p>
+                <h2>About H5-Index</h2>
+                <p>The H5-Index is a bibliometric metric that measures the impact and scientific productivity of academic conferences. An H5-Index of value h means that h articles published in the last 5 years have received at least h citations each.</p>
+                <p>This index is widely used to evaluate the quality and relevance of scientific conferences, providing an objective measure of publication impact.</p>
             </div>
         </section>
 
         <section id="methodology" class="info-section">
             <div class="container">
-                <h2>Metodologia</h2>
-                <p>Os dados apresentados foram coletados e processados a partir de bases bibliográficas reconhecidas. A análise considera:</p>
+                <h2>Methodology</h2>
+                <p>The data presented was collected and processed from recognized bibliographic databases. The analysis considers:</p>
                 <ul>
-                    <li>Publicações dos últimos 5 anos</li>
-                    <li>Citações recebidas por cada artigo</li>
-                    <li>Cálculo automático do H5-Index</li>
-                    <li>Classificação por área de conhecimento</li>
+                    <li>Publications from the last 5 years</li>
+                    <li>Citations received by each article</li>
+                    <li>Classification by knowledge area</li>
                 </ul>
-                <p>A atualização dos dados é realizada periodicamente para garantir a precisão das informações.</p>
+                <p>Data is updated periodically to ensure information accuracy.</p>
             </div>
         </section>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 H5-Index Conferências Brasileiras. Dados atualizados em setembro de 2024.</p>
+            <p>&copy; 2024 H5-Index Brazilian Conferences. Data updated in September 2024.</p>
         </div>
     </footer>
 
