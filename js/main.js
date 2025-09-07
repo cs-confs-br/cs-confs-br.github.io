@@ -187,8 +187,9 @@ function filterData() {
     
     filteredData = allData.filter(item => {
         const matchSearch = item.conference.toLowerCase().includes(searchTerm) || 
-                           item.acronym.toLowerCase().includes(searchTerm) ||
-                           item.organization.toLowerCase().includes(searchTerm);
+                           item.acronym.toLowerCase().includes(searchTerm);
+                           // ||
+                           //item.organization.toLowerCase().includes(searchTerm);
         const matchYear = !yearFilter || item.year === yearFilter;
         const matchCategory = !categoryFilter || item.category === categoryFilter;
         
@@ -319,7 +320,8 @@ function changePage(direction) {
 
 function showDetails(encodedItem) {
     const item = JSON.parse(decodeURIComponent(encodedItem));
-    alert(`Organization: ${item.organization}\nConference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nPublisher: ${item.publisher}\nProceedings: ${item.proceedings}\nISBN/ISSN: ${item.isbnIssn}\nCategory: ${item.category}\nSubcategory: ${item.subcategory}\nH5-Index: ${item.h5index}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
+    // alert(`Organization: ${item.organization}\nConference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nPublisher: ${item.publisher}\nProceedings: ${item.proceedings}\nISBN/ISSN: ${item.isbnIssn}\nCategory: ${item.category}\nSubcategory: ${item.subcategory}\nH5-Index: ${item.h5index}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
+    alert(`Conference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nCategory: ${item.category}\nH5-Index: ${item.h5index}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
 }
 
 function updateStatistics() {
