@@ -288,7 +288,6 @@ function renderTable() {
     pageData.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <!-- <td>${item.organization}</td> -->
             <td>${item.conference}</td>
             <td><strong>${item.acronym}</strong></td>
             <td>${item.year}</td>
