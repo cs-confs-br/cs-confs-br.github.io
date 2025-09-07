@@ -85,7 +85,6 @@ function switchTab(tabName) {
     
     if (tabName === 'estatisticas') {
         updateStatistics();
-        drawChart();
     }
 }
 
@@ -298,8 +297,8 @@ function renderTable() {
             <td>${item.year}</td>
             <td><strong>${item.h5index}</strong></td>
             <td><strong>${item.h5source}</strong></td>
-            <td>${item.totalCitations.toLocaleString('pt-BR')}</td>
-            <td>${item.paperCount}</td>
+            <td>${item.totalCitations === 0 ? '' : item.totalCitations.toLocaleString('pt-BR')}</td>
+            <td>${item.paperCount === 0 ? '' : item.paperCount}</td>
             <td>${item.category}</td>
             <td><button class="btn-detail" onclick="showDetails('${encodeURIComponent(JSON.stringify(item))}')">View</button></td>
         `;
@@ -331,14 +330,150 @@ function showDetails(encodedItem) {
 
 function updateStatistics() {
     const totalConferences = allData.length;
-    const totalPapers = allData.reduce((sum, item) => sum + item.paperCount, 0);
-    const totalCitations = allData.reduce((sum, item) => sum + item.totalCitations, 0);
-    const avgH5Index = (allData.reduce((sum, item) => sum + item.h5index, 0) / totalConferences).toFixed(1);
+    const h5Values = allData.map(item => item.h5index).filter(h5 => h5 > 0).sort((a, b) => a - b);
+    const avgH5Index = h5Values.length > 0 ? (h5Values.reduce((sum, h5) => sum + h5, 0) / h5Values.length).toFixed(1) : 0;
+    const medianH5Index = h5Values.length > 0 ? 
+        (h5Values.length % 2 === 0 ? 
+            ((h5Values[h5Values.length / 2 - 1] + h5Values[h5Values.length / 2]) / 2).toFixed(1) :
+            h5Values[Math.floor(h5Values.length / 2)]) : 0;
     
     document.getElementById('total-conferences').textContent = totalConferences.toLocaleString('pt-BR');
-    document.getElementById('total-papers').textContent = totalPapers.toLocaleString('pt-BR');
-    document.getElementById('total-citations').textContent = totalCitations.toLocaleString('pt-BR');
     document.getElementById('avg-h5index').textContent = avgH5Index;
+    
+    const medianElement = document.getElementById('median-h5index');
+    if (medianElement) {
+        medianElement.textContent = medianH5Index;
+    }
+    
+    createH5Histogram();
+}
+
+function createH5Histogram() {
+    const ctx = document.getElementById('h5-histogram');
+    if (!ctx) return;
+    
+    const ranges = [
+        { label: '0-25', min: 0, max: 25, count: 0 },
+        { label: '26-50', min: 26, max: 50, count: 0 },
+        { label: '51-75', min: 51, max: 75, count: 0 },
+        { label: '76-100', min: 76, max: 100, count: 0 },
+        { label: '100+', min: 101, max: Infinity, count: 0 }
+    ];
+    
+    allData.forEach(item => {
+        const h5 = item.h5index;
+        for (let range of ranges) {
+            if (h5 >= range.min && h5 <= range.max) {
+                range.count++;
+                break;
+            }
+        }
+    });
+    
+    if (window.h5Chart) {
+        window.h5Chart.destroy();
+    }
+    
+    window.h5Chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ranges.map(r => r.label),
+            datasets: [{
+                label: 'Number of Conferences',
+                data: ranges.map(r => r.count),
+                backgroundColor: '#5c9ccc',
+                borderColor: '#4a89b8',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `Conferences: ${context.parsed.y}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createSourcePieChart() {
+    const ctx = document.getElementById('source-pie');
+    if (!ctx) return;
+    
+    const sourceCounts = {};
+    
+    allData.forEach(item => {
+        if (item.h5source) {
+            const match = item.h5source.match(/\[([A-Z]+(?:\+[A-Z]+)*)\]/);
+            if (match) {
+                const source = match[1];
+                sourceCounts[source] = (sourceCounts[source] || 0) + 1;
+            }
+        }
+    });
+    
+    if (window.sourceChart) {
+        window.sourceChart.destroy();
+    }
+    
+    const labels = Object.keys(sourceCounts);
+    const data = Object.values(sourceCounts);
+    const colors = [
+        '#6e3aa7',
+        '#8b5cc3',
+        '#a87dd6',
+        '#c49ee9',
+        '#e0bffc'
+    ];
+    
+    window.sourceChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors.slice(0, labels.length),
+                borderColor: '#fff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const percentage = ((value / allData.length) * 100).toFixed(1);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
 function drawChart() {
