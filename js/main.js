@@ -125,18 +125,18 @@ function parseCSV(text) {
         });
         
         data.push({
-            organization: row['Organization'] || '',
+            //organization: row['Organization'] || '',
             conference: row['Conference'] || '',
             acronym: row['Acronym'] || '',
             year: row['Year'] || '',
-            publisher: row['Publisher'] || '',
-            proceedings: row['Proceedings'] || '',
-            isbnIssn: row['ISBN/ISSN'] || '',
-            category: row['Category'] || '',
-            subcategory: row['Subcategory'] || '',
-            paperCount: parseInt(row['CountPapers']) || 0,
-            totalCitations: parseInt(row['CountCitations']) || 0,
-            h5index: parseInt(row['h5']) || 0
+            //publisher: row['Publisher'] || '',
+            //proceedings: row['Proceedings'] || '',
+            //isbnIssn: row['ISBN/ISSN'] || '',
+            category: row['Topic'] || '',
+            //subcategory: row['Subcategory'] || '',
+            paperCount: parseInt(row['Papers(5Y)']) || 0,
+            totalCitations: parseInt(row['Citations(5Y)']) || 0,
+            h5index: row['h5'] || ''
         });
     }
     
@@ -229,10 +229,10 @@ function sortTable(column) {
                 aVal = a.acronym.toLowerCase();
                 bVal = b.acronym.toLowerCase();
                 break;
-            case 'organization':
-                aVal = a.organization.toLowerCase();
-                bVal = b.organization.toLowerCase();
-                break;    
+            //case 'organization':
+            //    aVal = a.organization.toLowerCase();
+            //    bVal = b.organization.toLowerCase();
+            //    break;    
             case 'year':
                 aVal = parseInt(a.year) || 0;
                 bVal = parseInt(b.year) || 0;
@@ -287,7 +287,7 @@ function renderTable() {
     pageData.forEach(item => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${item.organization}</td>
+            <!-- <td>${item.organization}</td> -->
             <td>${item.conference}</td>
             <td><strong>${item.acronym}</strong></td>
             <td>${item.year}</td>
