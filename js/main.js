@@ -136,7 +136,8 @@ function parseCSV(text) {
             //subcategory: row['Subcategory'] || '',
             paperCount: parseInt(row['Papers(5Y)']) || 0,
             totalCitations: parseInt(row['Citations(5Y)']) || 0,
-            h5index: row['h5'] || ''
+            h5index: parseInt(row['h5']) || 0,
+            h5source: row['h5_source'] || '',
         });
     }
     
@@ -242,6 +243,10 @@ function sortTable(column) {
                 aVal = a.h5index;
                 bVal = b.h5index;
                 break;
+            case 'h5source':
+                aVal = a.h5source;
+                bVal = b.h5source;
+                break;
             case 'citations':
                 aVal = a.totalCitations;
                 bVal = b.totalCitations;
@@ -292,6 +297,7 @@ function renderTable() {
             <td><strong>${item.acronym}</strong></td>
             <td>${item.year}</td>
             <td><strong>${item.h5index}</strong></td>
+            <td><strong>${item.h5source}</strong></td>
             <td>${item.totalCitations.toLocaleString('pt-BR')}</td>
             <td>${item.paperCount}</td>
             <td>${item.category}</td>
@@ -320,7 +326,7 @@ function changePage(direction) {
 function showDetails(encodedItem) {
     const item = JSON.parse(decodeURIComponent(encodedItem));
     // alert(`Organization: ${item.organization}\nConference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nPublisher: ${item.publisher}\nProceedings: ${item.proceedings}\nISBN/ISSN: ${item.isbnIssn}\nCategory: ${item.category}\nSubcategory: ${item.subcategory}\nH5-Index: ${item.h5index}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
-    alert(`Conference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nCategory: ${item.category}\nH5-Index: ${item.h5index}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
+    alert(`Conference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nCategory: ${item.category}\nH5-Index: ${item.h5index}\nH5 Source: ${item.h5source}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
 }
 
 function updateStatistics() {
