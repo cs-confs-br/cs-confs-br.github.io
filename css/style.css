@@ -337,8 +337,9 @@ td {
 }
 
 .stats-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 1.5rem;
     margin-bottom: 3rem;
 }
@@ -349,6 +350,8 @@ td {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     text-align: center;
+    min-width: 200px;
+    flex: 0 1 250px;
 }
 
 .stat-card h3 {

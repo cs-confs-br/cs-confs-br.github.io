@@ -34,7 +34,7 @@
         <section id="home" class="hero">
             <div class="container">
                 <img src="imgs/metrics-v2.png" alt="Metrics for Brazilian Computer Science Conferences" class="hero-logo">
-                <p>Bibliometric Analysis of the Main Brazilian Academic Conferences in Computer Science</p>
+                <p>Connecting Brazilian Conference Metrics to the Global Landscape</p>
             </div>
         </section>
 
@@ -106,20 +106,21 @@
                                 <p class="stat-number" id="total-conferences">0</p>
                             </div>
                             <div class="stat-card">
-                                <h3>Total Papers</h3>
-                                <p class="stat-number" id="total-papers">0</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>Total Citations</h3>
-                                <p class="stat-number" id="total-citations">0</p>
-                            </div>
-                            <div class="stat-card">
                                 <h3>Average H5-Index</h3>
                                 <p class="stat-number" id="avg-h5index">0</p>
                             </div>
+                            <div class="stat-card">
+                                <h3>Median H5-Index</h3>
+                                <p class="stat-number" id="median-h5index">0</p>
+                            </div>
                         </div>
-                        <div class="chart-container">
-                            <canvas id="h5-chart"></canvas>
+                        <div class="charts-container" style="margin-top: 30px;">
+                            <div style="display: flex; justify-content: center;">
+                                <div style="min-width: 600px; max-width: 900px; width: 80%;">
+                                    <h3 style="text-align: center; color: #5c9ccc;">H5-Index Distribution</h3>
+                                    <canvas id="h5-histogram"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
