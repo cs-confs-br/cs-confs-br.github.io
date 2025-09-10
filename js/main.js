@@ -1,7 +1,7 @@
 let allData = [];
 let filteredData = [];
 let currentPage = 1;
-const itemsPerPage = 20;
+const itemsPerPage = 30;
 let currentSort = { column: 'h5index', order: 'desc' };
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -44,7 +44,7 @@ function setupEventListeners() {
 
     document.getElementById('search').addEventListener('input', filterData);
     document.getElementById('year-filter').addEventListener('change', filterData);
-    document.getElementById('field-filter').addEventListener('change', filterData);
+    document.getElementById('sbc-filter').addEventListener('change', filterData);
     document.getElementById('clear-filters').addEventListener('click', clearFilters);
 
     document.getElementById('prev-page').addEventListener('click', () => changePage(-1));
@@ -90,20 +90,20 @@ function switchTab(tabName) {
 
 async function loadData() {
     try {
-        const response = await fetch('out/website-2025.csv');
+        const response = await fetch('out/website-2025-sbc.csv');
         const text = await response.text();
         
         allData = parseCSV(text);
         filteredData = [...allData];
         
-        populateCategoryFilter();
+        populateSBCFilter();
         updateStatistics();
         renderTable();
         
         document.getElementById('loading').style.display = 'none';
     } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        document.getElementById('loading').innerHTML = 'Erro ao carregar dados. Por favor, recarregue a página.';
+        console.error('Error loading data:', error);
+        document.getElementById('loading').innerHTML = 'Error loading data. Please reload the page.';
     }
 }
 
@@ -124,19 +124,17 @@ function parseCSV(text) {
         });
         
         data.push({
-            //organization: row['Organization'] || '',
             conference: row['Conference'] || '',
             acronym: row['Acronym'] || '',
             year: row['Year'] || '',
-            //publisher: row['Publisher'] || '',
-            //proceedings: row['Proceedings'] || '',
-            //isbnIssn: row['ISBN/ISSN'] || '',
             category: row['Topic'] || '',
-            //subcategory: row['Subcategory'] || '',
             paperCount: parseInt(row['Papers(5Y)']) || 0,
             totalCitations: parseInt(row['Citations(5Y)']) || 0,
             h5index: parseInt(row['h5']) || 0,
             h5source: row['h5_source'] || '',
+            sbcClass: row['SBC_Class'] || '',
+            googleScholarId: row['Google_Scholar_ID'] || '',
+            dblpId: row['DBLP_ID'] || ''
         });
     }
     
@@ -166,34 +164,33 @@ function parseCSVLine(line) {
 }
 
 
-function populateCategoryFilter() {
-    const categories = [...new Set(allData.map(item => item.category))].sort();
-    const select = document.getElementById('field-filter');
+function populateSBCFilter() {
+    const sbcSelect = document.getElementById('sbc-filter');
+    if (!sbcSelect) return;
     
-    select.innerHTML = '<option value="">Todas</option>';
-    
-    categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        select.appendChild(option);
-    });
+    sbcSelect.innerHTML = `
+        <option value="">All</option>
+        <option value="Top10">Top 10</option>
+        <option value="Top20">Top 20</option>
+        <option value="Geral">General</option>
+        <option value="none">Not Classified</option>
+    `;
 }
+
 
 function filterData() {
     const searchTerm = document.getElementById('search').value.toLowerCase();
     const yearFilter = document.getElementById('year-filter').value;
-    const categoryFilter = document.getElementById('field-filter').value;
+    const sbcFilter = document.getElementById('sbc-filter')?.value;
     
     filteredData = allData.filter(item => {
         const matchSearch = item.conference.toLowerCase().includes(searchTerm) || 
                            item.acronym.toLowerCase().includes(searchTerm);
-                           // ||
-                           //item.organization.toLowerCase().includes(searchTerm);
         const matchYear = !yearFilter || item.year === yearFilter;
-        const matchCategory = !categoryFilter || item.category === categoryFilter;
+        const matchSBC = !sbcFilter || 
+                        (sbcFilter === 'none' ? !item.sbcClass : item.sbcClass === sbcFilter);
         
-        return matchSearch && matchYear && matchCategory;
+        return matchSearch && matchYear && matchSBC;
     });
     
     currentPage = 1;
@@ -203,7 +200,8 @@ function filterData() {
 function clearFilters() {
     document.getElementById('search').value = '';
     document.getElementById('year-filter').value = '';
-    document.getElementById('field-filter').value = '';
+    const sbcFilter = document.getElementById('sbc-filter');
+    if (sbcFilter) sbcFilter.value = '';
     
     filteredData = [...allData];
     currentPage = 1;
@@ -221,7 +219,7 @@ function sortTable(column) {
     filteredData.sort((a, b) => {
         let aVal, bVal;
         
-        switch (column) {
+        switch(column) {
             case 'conference':
                 aVal = a.conference.toLowerCase();
                 bVal = b.conference.toLowerCase();
@@ -230,13 +228,9 @@ function sortTable(column) {
                 aVal = a.acronym.toLowerCase();
                 bVal = b.acronym.toLowerCase();
                 break;
-            //case 'organization':
-            //    aVal = a.organization.toLowerCase();
-            //    bVal = b.organization.toLowerCase();
-            //    break;    
             case 'year':
-                aVal = parseInt(a.year) || 0;
-                bVal = parseInt(b.year) || 0;
+                aVal = a.year;
+                bVal = b.year;
                 break;
             case 'h5index':
                 aVal = a.h5index;
@@ -257,6 +251,15 @@ function sortTable(column) {
             case 'category':
                 aVal = a.category.toLowerCase();
                 bVal = b.category.toLowerCase();
+                break;
+            case 'sbcClass':
+                const sbcOrder = {'Top10': 3, 'Top20': 2, 'Geral': 1, '': 0};
+                aVal = sbcOrder[a.sbcClass] || 0;
+                bVal = sbcOrder[b.sbcClass] || 0;
+                break;
+            case 'links':
+                aVal = (a.googleScholarId ? 1 : 0) + (a.dblpId ? 1 : 0);
+                bVal = (b.googleScholarId ? 1 : 0) + (b.dblpId ? 1 : 0);
                 break;
             default:
                 return 0;
@@ -291,16 +294,38 @@ function renderTable() {
     
     pageData.forEach(item => {
         const row = document.createElement('tr');
+        
+        const sbcDisplayName = item.sbcClass === 'Geral' ? 'General' : item.sbcClass;
+        const sbcBadge = item.sbcClass ? 
+            `<span class="badge ${item.sbcClass.toLowerCase()}">${sbcDisplayName}</span>` : '-';
+        
+        const h5Link = item.googleScholarId ? 
+            `<a href="https://scholar.google.com/citations?hl=en&view_op=list_hcore&venue=${item.googleScholarId}.2025" target="_blank" title="View on Google Scholar">${item.h5index}</a>` : 
+            item.h5index;
+        
+        const acronymLink = item.dblpId ? 
+            `<a href="https://dblp.org/db/conf/${item.dblpId}/" target="_blank" title="View on DBLP">${item.acronym}</a>` : 
+            item.acronym;
+        
+        const links = [];
+        if (item.googleScholarId) {
+            links.push(`<a href="https://scholar.google.com/citations?hl=en&view_op=list_hcore&venue=${item.googleScholarId}.2025" target="_blank" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>`);
+        }
+        if (item.dblpId) {
+            links.push(`<a href="https://dblp.org/db/conf/${item.dblpId}/" target="_blank" title="DBLP"><i class="fas fa-database"></i></a>`);
+        }
+        const linksHtml = links.length > 0 ? links.join(' ') : '-';
+        
         row.innerHTML = `
             <td>${item.conference}</td>
-            <td><strong>${item.acronym}</strong></td>
+            <td><strong>${acronymLink}</strong></td>
             <td>${item.year}</td>
-            <td><strong>${item.h5index}</strong></td>
-            <td><strong>${item.h5source}</strong></td>
-            <td>${item.totalCitations === 0 ? '' : item.totalCitations.toLocaleString('pt-BR')}</td>
+            <td><strong>${h5Link}</strong></td>
+            <td>${item.h5source}</td>
+            <td>${sbcBadge}</td>
+            <td>${item.totalCitations === 0 ? '' : item.totalCitations.toLocaleString('en-US')}</td>
             <td>${item.paperCount === 0 ? '' : item.paperCount}</td>
-            <td>${item.category}</td>
-            <td><button class="btn-detail" onclick="showDetails('${encodeURIComponent(JSON.stringify(item))}')">View</button></td>
+            <td>${linksHtml}</td>
         `;
         tbody.appendChild(row);
     });
@@ -310,65 +335,52 @@ function renderTable() {
 
 function updatePagination() {
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+    
+    document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages} (${filteredData.length} conferences)`;
     
     document.getElementById('prev-page').disabled = currentPage === 1;
     document.getElementById('next-page').disabled = currentPage === totalPages;
 }
 
 function changePage(direction) {
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    currentPage = Math.max(1, Math.min(currentPage + direction, totalPages));
+    currentPage += direction;
     renderTable();
 }
 
-function showDetails(encodedItem) {
-    const item = JSON.parse(decodeURIComponent(encodedItem));
-    // alert(`Organization: ${item.organization}\nConference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nPublisher: ${item.publisher}\nProceedings: ${item.proceedings}\nISBN/ISSN: ${item.isbnIssn}\nCategory: ${item.category}\nSubcategory: ${item.subcategory}\nH5-Index: ${item.h5index}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
-    alert(`Conference: ${item.conference}\nAcronym: ${item.acronym}\nYear: ${item.year}\nCategory: ${item.category}\nH5-Index: ${item.h5index}\nH5 Source: ${item.h5source}\nTotal Citations: ${item.totalCitations}\nTotal Papers: ${item.paperCount}`);
-}
-
 function updateStatistics() {
+    const validH5Data = allData.filter(item => item.h5index > 0);
+    
     const totalConferences = allData.length;
-    const h5Values = allData.map(item => item.h5index).filter(h5 => h5 > 0).sort((a, b) => a - b);
-    const avgH5Index = h5Values.length > 0 ? (h5Values.reduce((sum, h5) => sum + h5, 0) / h5Values.length).toFixed(1) : 0;
-    const medianH5Index = h5Values.length > 0 ? 
-        (h5Values.length % 2 === 0 ? 
-            ((h5Values[h5Values.length / 2 - 1] + h5Values[h5Values.length / 2]) / 2).toFixed(1) :
-            h5Values[Math.floor(h5Values.length / 2)]) : 0;
+    const avgH5Index = validH5Data.length > 0 
+        ? Math.round(validH5Data.reduce((acc, item) => acc + item.h5index, 0) / validH5Data.length)
+        : 0;
     
-    document.getElementById('total-conferences').textContent = totalConferences.toLocaleString('pt-BR');
+    const sortedH5 = validH5Data.map(item => item.h5index).sort((a, b) => a - b);
+    const medianH5Index = sortedH5.length > 0
+        ? sortedH5[Math.floor(sortedH5.length / 2)]
+        : 0;
+    
+    document.getElementById('total-conferences').textContent = totalConferences;
     document.getElementById('avg-h5index').textContent = avgH5Index;
+    document.getElementById('median-h5index').textContent = medianH5Index;
     
-    const medianElement = document.getElementById('median-h5index');
-    if (medianElement) {
-        medianElement.textContent = medianH5Index;
-    }
-    
-    createH5Histogram();
+    drawH5Histogram();
 }
 
-function createH5Histogram() {
-    const ctx = document.getElementById('h5-histogram');
-    if (!ctx) return;
+function drawH5Histogram() {
+    const ctx = document.getElementById('h5-histogram').getContext('2d');
     
     const ranges = [
-        { label: '0-25', min: 0, max: 25, count: 0 },
-        { label: '26-50', min: 26, max: 50, count: 0 },
-        { label: '51-75', min: 51, max: 75, count: 0 },
-        { label: '76-100', min: 76, max: 100, count: 0 },
-        { label: '100+', min: 101, max: Infinity, count: 0 }
+        { label: '0-25', min: 0, max: 25 },
+        { label: '26-50', min: 26, max: 50 },
+        { label: '51-75', min: 51, max: 75 },
+        { label: '76-100', min: 76, max: 100 },
+        { label: '100+', min: 101, max: Infinity }
     ];
     
-    allData.forEach(item => {
-        const h5 = item.h5index;
-        for (let range of ranges) {
-            if (h5 >= range.min && h5 <= range.max) {
-                range.count++;
-                break;
-            }
-        }
-    });
+    const counts = ranges.map(range => 
+        allData.filter(item => item.h5index >= range.min && item.h5index <= range.max).length
+    );
     
     if (window.h5Chart) {
         window.h5Chart.destroy();
@@ -380,23 +392,15 @@ function createH5Histogram() {
             labels: ranges.map(r => r.label),
             datasets: [{
                 label: 'Number of Conferences',
-                data: ranges.map(r => r.count),
+                data: counts,
                 backgroundColor: '#5c9ccc',
-                borderColor: '#4a89b8',
+                borderColor: '#4a7fa5',
                 borderWidth: 1
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
-                }
-            },
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     display: false
@@ -404,153 +408,30 @@ function createH5Histogram() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `Conferences: ${context.parsed.y}`;
+                            return context.parsed.y + ' conferences';
                         }
                     }
-                }
-            }
-        }
-    });
-}
-
-function createSourcePieChart() {
-    const ctx = document.getElementById('source-pie');
-    if (!ctx) return;
-    
-    const sourceCounts = {};
-    
-    allData.forEach(item => {
-        if (item.h5source) {
-            const match = item.h5source.match(/\[([A-Z]+(?:\+[A-Z]+)*)\]/);
-            if (match) {
-                const source = match[1];
-                sourceCounts[source] = (sourceCounts[source] || 0) + 1;
-            }
-        }
-    });
-    
-    if (window.sourceChart) {
-        window.sourceChart.destroy();
-    }
-    
-    const labels = Object.keys(sourceCounts);
-    const data = Object.values(sourceCounts);
-    const colors = [
-        '#6e3aa7',
-        '#8b5cc3',
-        '#a87dd6',
-        '#c49ee9',
-        '#e0bffc'
-    ];
-    
-    window.sourceChart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: colors.slice(0, labels.length),
-                borderColor: '#fff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed;
-                            const percentage = ((value / allData.length) * 100).toFixed(1);
-                            return `${label}: ${value} (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-function drawChart() {
-    const ctx = document.getElementById('h5-chart');
-    if (!ctx) return;
-    
-    const categoryData = {};
-    allData.forEach(item => {
-        const category = item.category || 'Outros';
-        if (!categoryData[category]) {
-            categoryData[category] = { count: 0, h5sum: 0, citationsSum: 0 };
-        }
-        categoryData[category].count++;
-        categoryData[category].h5sum += item.h5index;
-        categoryData[category].citationsSum += item.totalCitations;
-    });
-    
-    const categories = Object.keys(categoryData).sort();
-    const avgH5ByCategory = categories.map(cat => (categoryData[cat].h5sum / categoryData[cat].count).toFixed(1));
-    const totalCitationsByCategory = categories.map(cat => categoryData[cat].citationsSum);
-    
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: categories,
-            datasets: [{
-                label: 'H5-Index Médio',
-                data: avgH5ByCategory,
-                backgroundColor: 'rgba(92, 156, 204, 0.6)',
-                borderColor: 'rgba(92, 156, 204, 1)',
-                borderWidth: 1,
-                yAxisID: 'y'
-            }, {
-                label: 'Total de Citações',
-                data: totalCitationsByCategory,
-                type: 'line',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderWidth: 2,
-                yAxisID: 'y1'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'H5-Index e Citações por Categoria'
-                },
-                legend: {
-                    display: true,
-                    position: 'top'
                 }
             },
             scales: {
                 y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'H5-Index Médio'
+                    beginAtZero: true,
+                    max: Math.max(...counts) + 50,
+                    ticks: {
+                        stepSize: 100
                     }
                 },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'Total de Citações'
-                    },
+                x: {
                     grid: {
-                        drawOnChartArea: false
+                        display: false
                     }
                 }
             }
         }
     });
+}
+
+function showDetails(encodedItem) {
+    const item = JSON.parse(decodeURIComponent(encodedItem));
+    alert(`Conference: ${item.conference}\nH5-Index: ${item.h5index}`);
 }

@@ -6,6 +6,8 @@
     <title>Brazilian CS Conference Metrics</title>
     <link rel="icon" type="image/png" href="imgs/favicon.png">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/badges.css">
+    <link rel="stylesheet" href="css/table-compact.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -60,8 +62,8 @@
                                 </select>
                             </div>
                             <div class="filter-group">
-                                <label for="field-filter">Category:</label>
-                                <select id="field-filter">
+                                <label for="sbc-filter">SBC Class:</label>
+                                <select id="sbc-filter">
                                     <option value="">All</option>
                                 </select>
                             </div>
@@ -78,10 +80,10 @@
                                             <th data-sort="year">Year <i class="fas fa-sort"></i></th>
                                             <th data-sort="h5index">H5-Index <i class="fas fa-sort"></i></th>
                                             <th data-sort="h5source">H5 Source <i class="fas fa-sort"></i></th>
+                                            <th data-sort="sbcClass">SBC <i class="fas fa-sort"></i></th>
                                             <th data-sort="citations">Citations <i class="fas fa-sort"></i></th>
                                             <th data-sort="papers">Papers <i class="fas fa-sort"></i></th>
-                                            <th data-sort="category">Category <i class="fas fa-sort"></i></th>
-                                            <th>Details</th>
+                                            <th>Links</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body">
@@ -116,7 +118,7 @@
                         </div>
                         <div class="charts-container" style="margin-top: 30px;">
                             <div style="display: flex; justify-content: center;">
-                                <div style="min-width: 600px; max-width: 900px; width: 80%;">
+                                <div style="min-width: 600px; max-width: 900px; width: 80%; height: 300px;">
                                     <h3 style="text-align: center; color: #5c9ccc;">H5-Index Distribution</h3>
                                     <canvas id="h5-histogram"></canvas>
                                 </div>
@@ -150,7 +152,8 @@
                     evaluation <a href="https://www.gov.br/capes/pt-br/centrais-de-conteudo/documentos/avaliacao/09012022_CLASSIFICACAODEEVENTOSPARA20172020.xlsx">(see CAPES document 09012022_CLASSIFICACAODEEVENTOSPARA20172020.xlsx)</a>,
                     but since not all are listed under Google Scholar, we can add missing conferences manually using other bases per user request.</p>
                 <p>This project is open and collaborative, so if you miss some important conference just <a href="https://github.com/cs-confs-br/cs-confs-br-data/issues/new">Open an Issue</a> and we will try to help!</p>
-                <p>The data is available at <a href="./out/website-2025.csv">website-2025.csv</a> and also the <a href="./out/website-2025-generate.log">processing logs</a> generated from <a href="https://github.com/cs-confs-br/cs-confs-br-data">cs-confs-br-data</a> project.</p>
+                <p>The data is available at <a href="./out/website-2025-sbc.csv">website-2025-sbc.csv</a> and also the <a href="./out/website-2025-generate.log">processing logs</a> generated from <a href="https://github.com/cs-confs-br/cs-confs-br-data">cs-confs-br-data</a> project.</p>
+                <p>Conference classifications by the Brazilian Computer Society (SBC) Special Committees are included (Top10, Top20, or General).</p>
             </div>
         </section>
     </main>

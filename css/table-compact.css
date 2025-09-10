@@ -1,0 +1,74 @@
+#conferences-table {
+    font-size: 0.85em;
+}
+
+#conferences-table th {
+    padding: 8px 6px;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+#conferences-table td {
+    padding: 6px 4px;
+    line-height: 1.3;
+}
+
+#conferences-table td:first-child {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.badge {
+    font-size: 0.75em;
+    padding: 1px 6px;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+}
+
+.filter-group label {
+    font-size: 0.85em;
+    margin-bottom: 3px;
+}
+
+.filter-group select,
+.filter-group input {
+    font-size: 0.9em;
+    padding: 5px;
+}
+
+.pagination {
+    font-size: 0.9em;
+}
+
+.btn-pagination {
+    padding: 6px 12px;
+    font-size: 0.85em;
+}
+
+#page-info {
+    font-size: 0.9em;
+}
+
+@media (max-width: 1200px) {
+    #conferences-table {
+        font-size: 0.8em;
+    }
+    
+    #conferences-table th,
+    #conferences-table td {
+        padding: 4px 3px;
+    }
+}
