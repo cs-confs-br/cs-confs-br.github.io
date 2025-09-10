@@ -172,7 +172,7 @@ function populateSBCFilter() {
         <option value="">All</option>
         <option value="Top10">Top 10</option>
         <option value="Top20">Top 20</option>
-        <option value="Geral">General</option>
+        <option value="Geral">Recommended</option>
         <option value="none">Not Classified</option>
     `;
 }
@@ -295,13 +295,14 @@ function renderTable() {
     pageData.forEach(item => {
         const row = document.createElement('tr');
         
-        const sbcDisplayName = item.sbcClass === 'Geral' ? 'General' : item.sbcClass;
+        const sbcDisplayName = item.sbcClass === 'Geral' ? 'Recommended' : item.sbcClass;
         const sbcBadge = item.sbcClass ? 
             `<span class="badge ${item.sbcClass.toLowerCase()}">${sbcDisplayName}</span>` : '-';
         
-        const h5Link = item.googleScholarId ? 
-            `<a href="https://scholar.google.com/citations?hl=en&view_op=list_hcore&venue=${item.googleScholarId}.2025" target="_blank" title="View on Google Scholar">${item.h5index}</a>` : 
-            item.h5index;
+        const h5Display = item.h5index === 0 ? '' : item.h5index;
+        const h5Link = item.googleScholarId && item.h5index > 0 ? 
+            `<a href="https://scholar.google.com/citations?hl=en&view_op=list_hcore&venue=${item.googleScholarId}.2025" target="_blank" title="View on Google Scholar">${h5Display}</a>` : 
+            h5Display;
         
         const acronymLink = item.dblpId ? 
             `<a href="https://dblp.org/db/conf/${item.dblpId}/" target="_blank" title="View on DBLP">${item.acronym}</a>` : 
@@ -316,8 +317,14 @@ function renderTable() {
         }
         const linksHtml = links.length > 0 ? links.join(' ') : '-';
         
+        // Truncate conference name if too long
+        const maxLength = 60;
+        const conferenceDisplay = item.conference.length > maxLength 
+            ? `<span title="${item.conference}">${item.conference.substring(0, maxLength)}...</span>`
+            : item.conference;
+        
         row.innerHTML = `
-            <td>${item.conference}</td>
+            <td>${conferenceDisplay}</td>
             <td><strong>${acronymLink}</strong></td>
             <td>${item.year}</td>
             <td><strong>${h5Link}</strong></td>
