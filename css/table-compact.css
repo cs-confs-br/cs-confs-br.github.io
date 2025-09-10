@@ -20,9 +20,8 @@
     white-space: nowrap;
 }
 
-#conferences-table td:first-child span[title] {
-    cursor: help;
-    border-bottom: 1px dotted #999;
+#conferences-table td:first-child .conference-name {
+    display: block;
 }
 
 .badge {

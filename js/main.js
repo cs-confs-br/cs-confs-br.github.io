@@ -317,11 +317,9 @@ function renderTable() {
         }
         const linksHtml = links.length > 0 ? links.join(' ') : '-';
         
-        // Truncate conference name if too long
-        const maxLength = 60;
-        const conferenceDisplay = item.conference.length > maxLength 
-            ? `<span title="${item.conference}">${item.conference.substring(0, maxLength)}...</span>`
-            : item.conference;
+        // Create clickable conference name that expands on click
+        const conferenceId = `conf-${startIndex + pageData.indexOf(item)}`;
+        const conferenceDisplay = `<span class="conference-name" id="${conferenceId}" data-fullname="${item.conference.replace(/"/g, '&quot;')}">${item.conference}</span>`;
         
         row.innerHTML = `
             <td>${conferenceDisplay}</td>
@@ -338,6 +336,56 @@ function renderTable() {
     });
     
     updatePagination();
+    
+    // Add click handlers for truncated conference names
+    setTimeout(() => {
+        document.querySelectorAll('.conference-name').forEach(span => {
+            // Check if text is truncated
+            if (span.scrollWidth > span.clientWidth) {
+                span.style.cursor = 'pointer';
+                span.style.textDecoration = 'underline';
+                span.style.textDecorationStyle = 'dotted';
+                
+                span.addEventListener('click', function() {
+                    const fullName = this.getAttribute('data-fullname');
+                    const td = this.parentElement;
+                    
+                    // Create input field
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = fullName;
+                    input.readOnly = true;
+                    input.style.width = '100%';
+                    input.style.border = '1px solid #5c9ccc';
+                    input.style.padding = '2px 4px';
+                    input.style.fontFamily = 'inherit';
+                    input.style.fontSize = 'inherit';
+                    input.style.backgroundColor = '#f9f9f9';
+                    
+                    // Replace span with input
+                    td.innerHTML = '';
+                    td.appendChild(input);
+                    
+                    // Select all text
+                    input.select();
+                    
+                    // Restore on blur
+                    input.addEventListener('blur', function() {
+                        td.innerHTML = '';
+                        td.appendChild(span);
+                    });
+                    
+                    // Restore on Escape key
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') {
+                            td.innerHTML = '';
+                            td.appendChild(span);
+                        }
+                    });
+                });
+            }
+        });
+    }, 10);
 }
 
 function updatePagination() {
